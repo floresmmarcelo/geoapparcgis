@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.32/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.32/esri/css/esri.css">
+    <style>
+        html,body,#mapDiv {
+            height:100%;
+            padding:0;
+            margin:0;
+        }
+        #BasemapToggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+        }
+    </style>
+    
+    <script src="https://js.arcgis.com/3.32/"></script>
+    <script>
+    var mapa;
+        require (["esri/map", "esri/geometry/Extent", "esri/layers/WMSLayer", "esri/layers/WMSLayerInfo", "esri/dijit/BasemapToggle","dojo/domReady!"],
+        function(Map, Extent, WMSLayer, WMSLayerInfo, BasemapToggle){
+            map = new Map("mapDiv", {
+                basemap: "streets",
+                center: [-3.7492199, 40.4636688],
+                zoom: 6
+            });
+
+            var toggle = new BasemapToggle({
+                map: map,
+                basemap: "satellite"
+                }, "BasemapToggle");
+                toggle.startup();
+
+            var wmsLayer = new WMSLayer("http://geoserveis.icgc.cat/icc_mapesbase/wms/service?", {
+                format: "png",
+                visibleLayers: ['orto25c'],
+                resourceInfo:{
+                    extent: new Extent(5396.5453260000003866, 4940534.5240730000659823, 373773.0275080000283197, 5296659.8322890000417829, {wkid: 25831}),
+                    getMapURL: "http://geoserveis.icgc.cat/icc_mapesbase/wms/service?",
+                    layerInfos: [
+                        new WMSLayerInfo({
+                            name: "orto25c"
+                        })
+                    ],
+                    spatialReferences: [23031, 25831, 32631, 3857, 4230, 4258, 4326, 2154],
+                    version: "1.1.1"
+                }
+            });
+            
+            wmsLayer.on("error", function (response){
+                console.log("Error: %s", response.error.message);
+            });
+            
+            map.addLayer(wmsLayer);
+
+        });
+
+    </script>
+    <title>Primer mapa</title>
+</head>
+<body class="claro">
+    <div id="mapDiv">
+        <div id="BasemapToggle"></div>
+    </div>
+</body>
+</html>
